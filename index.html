@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>画板</title>
+    <style>
+        * {
+            margin:0;
+            padding: 0;
+        }
+        #canvas{
+            display:block;
+        }
+    </style>
+</head>
+<body>
+    <canvas id="canvas"></canvas>
+    <script>
+        let canvas = document.getElementById('canvas');
+        let ctx = canvas.getContext('2d');
+        let painting = false;
+        let lase;
+        canvas.width = document.documentElement.clientWidth;
+        canvas.height = document.documentElement.clientHeight;
+        ctx.lineWidth = 10;
+        ctx.lineCap="round"
+
+        // 是否支持触摸屏：'ontouchstart' in document.documentElement
+        var isTouchDevice = 'ontouchstart' in document.documentElement;
+        if(isTouchDevice) {
+            //手机版画图
+            canvas.ontouchstart = (e) => {
+                last = [e.touches[0].clientX,e.touches[0].clientY];
+            }
+            canvas.ontouchmove = (e) => {
+                drawLine(last[0],last[1],e.touches[0].clientX, e.touches[0].clientY);
+                last = [e.touches[0].clientX,e.touches[0].clientY];
+            }
+        }else {
+            //电脑浏览器画图
+            canvas.onmousedown = (e) => {
+                painting = true;
+                last = [e.clientX,e.clientY];
+            }
+            canvas.onmousemove = (e) => {
+                if(painting === true) {
+                    drawLine(last[0],last[1],e.clientX, e.clientY)
+                    last = [e.clientX,e.clientY]
+                }
+            }
+            canvas.onmouseup = (e) => {
+                painting = false;
+            }
+        }
+
+        
+        function drawLine(x,y,x1,y1) {
+            ctx.beginPath();
+            ctx.moveTo(x,y);
+            ctx.lineTo(x1,y1);
+            ctx.stroke()
+        }
+
+    </script>
+</body>
+</html>
